@@ -1,6 +1,6 @@
 library(tidyverse)
 
-df_raw <- read_csv('/Users/davidwilson/Downloads/train.csv')
+df_raw <- read_csv('https://www.dropbox.com/s/petmujrpxa3qn3p/titanic.csv?dl=1')
 
 df_raw %>% glimpse
 
