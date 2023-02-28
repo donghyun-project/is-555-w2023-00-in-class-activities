@@ -21,29 +21,42 @@ df_raw %>% glimpse
 
 df <- df_raw %>% janitor::clean_names()
 
-
+df %>% glimpse
 # Missingness -------------------------------------------------------------------------------------------
 # Algorithms don't like missing values. It messes with the math.
 
 # Get a feel for the missingness
+df %>% 
+  summarize(across(everything(), ~sum(is.na(.x))))
+
+df %>% 
+  summarize(count_of_age_na = sum(is.na(age)))
 
 
 # first check: is the missingness relevant?
 # use summarize across
-
+df %>% 
+  group_by(is.na(age)) %>% 
+  summarize(across(everything(), ~mean(.x, na.rm = T)))
 
 # fill in missing age values, check our work
+df <- df %>% 
+  mutate(age = if_else(is.na(age), mean(age, na.rm = T), age))
 
 
 # now handle embarked, this time using replace_na()
 # Again, check our work
+df <- df %>% 
+  mutate(embarked = replace_na(embarked, 'Unknown')) 
 
 
 
 # What about cabin missingness? Random?
 # use summarize across again.
 # context: private cabins were assigned for some but not all.
-
+df %>% 
+  group_by(is.na(cabin)) %>% 
+  summarize(across(everything(), ~mean(.x, na.rm = T)))
 
 
 
