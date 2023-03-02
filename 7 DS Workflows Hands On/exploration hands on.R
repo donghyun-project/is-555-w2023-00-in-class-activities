@@ -10,6 +10,7 @@ df2 %>% summarize_all(list(mean=mean, sd=sd))
 df3 %>% summarize_all(list(mean=mean, sd=sd))
 df4 %>% summarize_all(list(mean=mean, sd=sd))
 
+<<<<<<< HEAD
 
 
 df1 %>% summarize_all(list(mean=mean, sd=sd))
@@ -29,3 +30,26 @@ bind_rows(df1, df2, df3, df4, .id = 'df') %>%
   geom_point() +
   geom_smooth(method = 'lm') +
   facet_wrap(~df)
+=======
+df1 %>% summary() 
+df2 %>% summary() 
+df3 %>% summary() 
+df4 %>% summary() 
+
+df1 %>% cor()
+df2 %>% cor()
+df3 %>% cor()
+df4 %>% cor()
+
+
+
+
+
+df1 %>% summarize_all(list(mean=mean, sd=sd))
+
+# correlation matrix:
+df1 %>% cor()
+
+# simple regression analysis:
+lm(y ~ x, data = df1) %>% coefficients()
+>>>>>>> 6d48d7e374759eada86a5921cd4cc121cd2b8db3
