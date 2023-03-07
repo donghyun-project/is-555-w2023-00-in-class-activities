@@ -29,8 +29,8 @@ df <- df_raw %>% janitor::clean_names()
 df %>% 
   summarize(across(everything(), ~sum(is.na(.x)))) # Column is represented as .x
 
-df %>% 
-  summarize(survived = sum(is.na(survived())))
+#df %>% 
+#  summarize(survived = sum(is.na(survived())))
 
 
 
@@ -71,27 +71,36 @@ df %>%
   summary()
 
 # calculate extreme threshold caps based on 99th percentile
-age_cap <- quantile(df$age, .99)
+age_cap <-    quantile(df$age, .99)
 sib_sp_cap <- quantile(df$sib_sp, .99)
-parch_cap <- quantile(df$parch, .99)
-fare_cap <- quantile(df$fare, .99)
+parch_cap <-  quantile(df$parch, .99)
+fare_cap <-   quantile(df$fare, .99)
 
 # Optional: Create a tibble for easy comparison:
-
+tibble(column = outlier_candidates,
+       caps = c(age_cap, sib_sp_cap, parch_cap, fare_cap))
 # Now check how many are beyond the percentile caps
-
-
-
-
+df %>% 
+  summarise(count_over_age = sum(age > age_cap),
+            count_over_sib_sp = sum(sib_sp > sib_sp_cap),
+            count_over_parch = sum(parch > parch_cap),
+            count_over_fare = sum(fare > fare_cap))
 
 # cap age and fare, and check work before saving
-
+df <- df %>% 
+  mutate(fare = if_else(fare > fare_cap, fare_cap, fare))
 
 # save the result to df
 
+df %>% 
+  ggplot(aes(x = age)) +
+  geom_histogram() +
+  theme_bw()
 
-
-
+df %>% 
+  ggplot(aes(x = fare)) +
+  geom_histogram() +
+  theme_bw()
 # Transforming Features ---------------------------------------------------------------------------------
 # Here's the basic idea behind Box-Cox transformations:
 tribble(
@@ -130,10 +139,29 @@ df %>%
     fare_th  = fare^(1/2),
     fare_t1  = fare^1,
     fare_t2  = fare^2
-  ) 
+  ) %>% 
+  select(starts_with('fare_')) %>% 
+  pivot_longer(starts_with('fare')) %>% 
+  ggplot(aes(x = value, fill = name)) +
+  geom_density(alpha = .4) +
+  facet_wrap(~name, scales = 'free', ncol = 1)
 
 # now let's visualize the effect of the transformations to see 
 # which one makes sense.
+
+df <- df %>% 
+  mutate(fare = fare^-(1/2))
+
+df %>% 
+  select(where(is.numeric))
+
+df %>% 
+  mutate(across(all_of(outlier_candidates), ~scale(.x)))
+
+
+
+
+
 
 
 
